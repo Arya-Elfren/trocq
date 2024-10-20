@@ -7,8 +7,10 @@
   };
 
   outputs = { self, ... }@inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    imports = [ inputs.flake-parts.flakeModules.easyOverlay ];
     systems = inputs.nixpkgs.lib.systems.flakeExposed;
     perSystem = { pkgs, config, system, ... }: rec {
+      overlayAttrs = { inherit (config.packages) trocq; };
       packages.trocq = import inputs.coq-nix-toolbox { src = ./.; };
       devShells.default = pkgs.mkShell { nativeBuildInputs = [ packages.trocq ]; };
     };
